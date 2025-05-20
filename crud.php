@@ -262,7 +262,9 @@ $purchases = getPurchaseHistory($conn);
             </form>
         </p>
         <?php if ($loggedInUser === 'Administrador'): ?>
-            
+            <p style="text-align: center;">
+                <a href="admin_panel.php">Ir al Panel de Control</a>
+            </p>
             <!-- Celda en la esquina superior derecha -->
             <div class="top-right-cell">
                 <a href="admin_panel.php">Panel de Control</a> <!-- Enlace al Panel de Control -->
