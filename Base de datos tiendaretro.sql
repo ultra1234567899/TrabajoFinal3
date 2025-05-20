@@ -46,3 +46,27 @@ INSERT INTO productos (nombre, precio) VALUES
 ('Sonic the Hedgehog 2', 40.00),
 ('Final Fantasy VII', 70.00),
 ('Super Smash Bros 64', 80.00);
+
+ALTER TABLE clientes
+DROP FOREIGN KEY clientes_ibfk_1;
+
+ALTER TABLE clientes
+ADD CONSTRAINT clientes_ibfk_1
+FOREIGN KEY (usuario) REFERENCES usuarios(usuario)
+ON DELETE CASCADE;
+
+ALTER TABLE compras
+DROP FOREIGN KEY compras_ibfk_1;
+
+ALTER TABLE compras
+ADD CONSTRAINT compras_ibfk_1
+FOREIGN KEY (user_id) REFERENCES usuarios(usuario)
+ON DELETE CASCADE;
+
+ALTER TABLE compras
+DROP FOREIGN KEY compras_ibfk_2;
+
+ALTER TABLE compras
+ADD CONSTRAINT compras_ibfk_2
+FOREIGN KEY (product_id) REFERENCES productos(referencia)
+ON DELETE CASCADE;
