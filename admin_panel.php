@@ -1,35 +1,31 @@
 <?php
 session_start();
 
-// Verifica si el usuario es "Administrador", de lo contrario, deniega el acceso.
 if (!isset($_SESSION['loggedInUser']) || $_SESSION['loggedInUser'] !== 'Administrador') {
     die("Acceso denegado. Solo el administrador puede acceder a esta página.");
 }
 
-// Configuración de la conexión a la base de datos
 $host = 'localhost:3307';
 $dbname = 'tiendaretro';
 $username = 'root';
 $password = '';
 
 try {
-    // Conexión a la base de datos usando PDO
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // Activa el modo de errores
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Error al conectar con la base de datos: " . $e->getMessage());
 }
 
-// Funciones para gestionar productos y usuarios
 function getAllProducts($conn) {
-    return $conn->query("SELECT * FROM productos")->fetchAll(PDO::FETCH_ASSOC); // Devuelve todos los productos
+    return $conn->query("SELECT * FROM productos")->fetchAll(PDO::FETCH_ASSOC); 
 }
 
 function addProduct($conn, $name, $price) {
     $stmt = $conn->prepare("INSERT INTO productos (nombre, precio) VALUES (:nombre, :precio)");
     $stmt->bindParam(':nombre', $name);
     $stmt->bindParam(':precio', $price);
-    return $stmt->execute(); // Inserta un nuevo producto
+    return $stmt->execute(); 
 }
 
 function updateProduct($conn, $productId, $name, $price) {
@@ -37,37 +33,36 @@ function updateProduct($conn, $productId, $name, $price) {
     $stmt->bindParam(':nombre', $name);
     $stmt->bindParam(':precio', $price);
     $stmt->bindParam(':id', $productId);
-    return $stmt->execute(); // Actualiza un producto existente
+    return $stmt->execute(); 
 }
 
 function deleteProduct($conn, $productId) {
     $stmt = $conn->prepare("DELETE FROM productos WHERE referencia = :id");
     $stmt->bindParam(':id', $productId);
-    return $stmt->execute(); // Elimina un producto
+    return $stmt->execute(); 
 }
 
 function getAllUsers($conn) {
-    return $conn->query("SELECT * FROM usuarios")->fetchAll(PDO::FETCH_ASSOC); // Devuelve todos los usuarios
+    return $conn->query("SELECT * FROM usuarios")->fetchAll(PDO::FETCH_ASSOC); 
 }
 
 function updateUser($conn, $userId, $username, $password) {
-    $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Encripta la contraseña
+    $hashedPassword = password_hash($password, PASSWORD_BCRYPT); 
     $stmt = $conn->prepare("UPDATE usuarios SET usuario = :usuario, contrasena = :contrasena WHERE id = :id");
     $stmt->bindParam(':usuario', $username);
     $stmt->bindParam(':contrasena', $hashedPassword);
     $stmt->bindParam(':id', $userId);
-    return $stmt->execute(); // Actualiza un usuario
+    return $stmt->execute();
 }
 
 function deleteUser($conn, $userId) {
     $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = :id");
     $stmt->bindParam(':id', $userId);
-    return $stmt->execute(); // Elimina un usuario
+    return $stmt->execute();
 }
 
-// Procesa las acciones enviadas desde los formularios
 $message = "";
-$messageClass = ""; // Variable para la clase del mensaje
+$messageClass = ""; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     switch ($_POST['action']) {
@@ -123,7 +118,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 }
 
-// Obtiene los datos para mostrarlos en el panel
 $products = getAllProducts($conn);
 $users = getAllUsers($conn);
 ?>
@@ -136,7 +130,7 @@ $users = getAllUsers($conn);
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('electronica-1ovz9er6jk6otp61.jpg'); /* Imagen de fondo */
+            background-image: url('electronica-1ovz9er6jk6otp61.jpg'); 
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -146,11 +140,11 @@ $users = getAllUsers($conn);
         }
 
         h1, h2, h3 {
-            color: #007bff; /* Cambia el color de los títulos a azul */
+            color: #007bff; 
         }
 
         label {
-            color: #007bff; /* Cambia el color de las etiquetas a azul */
+            color: #007bff; 
             font-weight: bold; 
         }
 
@@ -158,7 +152,7 @@ $users = getAllUsers($conn);
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
+            background: rgba(255, 255, 255, 0.9); 
         }
 
         table th, table td {
@@ -181,15 +175,15 @@ $users = getAllUsers($conn);
             margin: 5px 0;
             padding: 5px;
             width: 150px;
-            border: 1px solid #007bff; /* Borde azul */
-            border-radius: 3px; /* Bordes redondeados */
-            color: #007bff; /* Texto azul */
+            border: 1px solid #007bff;
+            border-radius: 3px; 
+            color: #007bff; 
         }
 
         input[type="text"]:focus, input[type="number"]:focus, input[type="password"]:focus {
-            outline: none; /* Elimina el borde predeterminado al enfocar */
-            border-color: #0056b3; /* Cambia el borde a un azul más oscuro al enfocar */
-            box-shadow: 0 0 5px #0056b3; /* Agrega un efecto de sombra azul al enfocar */
+            outline: none; 
+            border-color: #0056b3; 
+            box-shadow: 0 0 5px #0056b3;
         }
 
         button {
@@ -206,15 +200,15 @@ $users = getAllUsers($conn);
         }
 
         .top-right-cell {
-            position: absolute; /* Posiciona el contenedor de forma absoluta */
-            top: 10px; /* Margen desde la parte superior */
-            right: 10px; /* Margen desde la parte derecha */
-            background: rgba(255, 255, 255, 0.9); /* Fondo blanco semitransparente */
-            border: 1px solid #ddd; /* Borde gris claro */
-            border-radius: 5px; /* Bordes redondeados */
-            padding: 10px; /* Espaciado interno */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para darle profundidad */
-            text-align: center; /* Centra el texto */
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: rgba(255, 255, 255, 0.9); 
+            border: 1px solid #ddd; 
+            border-radius: 5px;
+            padding: 10px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+            text-align: center;
         }
 
         .top-right-cell a {
@@ -224,24 +218,22 @@ $users = getAllUsers($conn);
         }
 
         .top-right-cell a:hover {
-            color: #0056b3; /* Cambia el color al pasar el cursor */
+            color: #0056b3;
         }
 
-        /* Cambia el color del nombre de usuario a negro */
         table td:first-child {
             color: #000; 
             font-weight: bold; 
         }
 
-        /* Cambia el color del nombre y precio dentro de "Acción" a negro */
         input[name="name"], input[name="price"], input[name="username"] {
             color: #000; 
             border: 1px solid #ddd; 
         }
 
         input[name="name"]:focus, input[name="price"]:focus, input[name="username"]:focus {
-            outline: none; /* Elimina el borde predeterminado al enfocar */
-            border-color: #007bff; /* Cambia el borde a azul al enfocar */
+            outline: none; 
+            border-color: #007bff; 
             box-shadow: 0 0 5px #007bff; 
         }
 
@@ -252,21 +244,20 @@ $users = getAllUsers($conn);
         }
 
         .message.success {
-            color: green; /* Mensajes de éxito en verde */
+            color: green; 
         }
 
         .message.error {
-            color: red; /* Mensajes de error en rojo */
+            color: red; 
         }
     </style>
 </head>
 <body>
-    <!-- Celda en la esquina superior derecha -->
     <div class="top-right-cell">
         <p>Opciones</p>
-        <a href="registro.php">Agregar Usuario</a> <!-- Enlace para cerrar sesión -->
+        <a href="registro.php">Agregar Usuario</a> 
         <br>
-        <a href="crud.php">Volver a la Tienda</a> <!-- Enlace para volver a la tienda -->
+        <a href="crud.php">Volver a la Tienda</a> 
     </div>
 
     <h1 style="text-align: center;">Panel de Control</h1>
@@ -274,7 +265,6 @@ $users = getAllUsers($conn);
         <p class="message <?php echo $messageClass; ?>"><?php echo $message; ?></p>
     <?php endif; ?>
 
-    <!-- Gestión de productos -->
     <h2>Gestionar Productos</h2>
     <form method="POST">
         <input type="hidden" name="action" value="add_product">
@@ -316,7 +306,6 @@ $users = getAllUsers($conn);
         <?php endforeach; ?>
     </table>
 
-    <!-- Gestión de usuarios -->
     <h2>Gestionar Usuarios</h2>
     <h3>Lista de Usuarios</h3>
     <table>
